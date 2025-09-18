@@ -2,21 +2,11 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, ShoppingCart, User, LogOut } from "lucide-react";
 
-export default function Navbar({ onToggleSidebar }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+export default function Navbar({ onToggleSidebar, onToggleMobile }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  const handleToggle = () => {
-    const newState = !sidebarOpen;
-    setSidebarOpen(newState);
-    if (onToggleSidebar) {
-      onToggleSidebar(newState);
-    }
-  };
-
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -29,16 +19,22 @@ export default function Navbar({ onToggleSidebar }) {
 
   const handleSignOut = () => {
     setDropdownOpen(false);
-    navigate("/signin"); // redirect to sign in
+    navigate("/signin");
   };
 
   return (
-    <header className="flex justify-between items-center px-6 py-3 bg-white shadow-sm border-b">
+    <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 py-3 bg-white shadow-sm border-b">
       {/* Left: Brand + Hamburger */}
       <div className="flex items-center gap-3">
         <button
-          onClick={handleToggle}
-          className="p-2 rounded-lg hover:bg-gray-100"
+          onClick={onToggleMobile}
+          className="p-2 rounded-lg hover:bg-gray-100 md:hidden"
+        >
+          <Menu size={22} className="text-[#1F4E79]" />
+        </button>
+        <button
+          onClick={onToggleSidebar}
+          className="p-2 rounded-lg hover:bg-gray-100 hidden md:block"
         >
           <Menu size={22} className="text-[#1F4E79]" />
         </button>
