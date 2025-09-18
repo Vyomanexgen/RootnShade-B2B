@@ -8,7 +8,7 @@ export default function Home() {
       <div className="flex items-center justify-between bg-[#F4F6F8] px-6 py-6 rounded-lg">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Welcome back, Aditya Electronics
+            Welcome back, Sai
           </h1>
           <p className="text-gray-600 text-sm mt-1">
             Here’s what’s happening with your business today
