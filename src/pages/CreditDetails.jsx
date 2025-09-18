@@ -28,6 +28,7 @@ function Keypad({ onInput, onClear }) {
 
 export default function CreditDetails() {
   const [amount, setAmount] = useState("");
+  const [error, setError] = useState("");
   const [showQR, setShowQR] = useState(false);
   const [showKeypad, setShowKeypad] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -58,11 +59,36 @@ export default function CreditDetails() {
     { id: 3, type: "Payment", date: "2024-01-05", amount: "+₹22,000", status: "Completed" },
   ];
 
-  const handleInput = (val) => setAmount((prev) => prev + val);
-  const handleClear = () => setAmount("");
+  // ✅ Pure validator (doesn’t set state)
+  const checkValidity = (val) => {
+    if (!val || val === "0") return "Amount must be greater than 0";
+    if (parseInt(val) > outstanding) return `Amount cannot exceed ₹${outstanding}`;
+    return "";
+  };
+
+  const handleInput = (val) => {
+    const newVal = amount + val;
+    if (/^\d*$/.test(newVal)) {
+      setAmount(newVal);
+      setError(checkValidity(newVal));
+    }
+  };
+
+  const handleClear = () => {
+    setAmount("");
+    setError("");
+  };
+
   const handlePayFull = () => {
     setAmount(outstanding.toString());
-    setShowKeypad(false); // ✅ close keypad
+    setError(""); // valid
+    setShowKeypad(false);
+  };
+
+  const handleDesktopChange = (e) => {
+    const val = e.target.value.replace(/\D/g, ""); // only digits
+    setAmount(val);
+    setError(checkValidity(val));
   };
 
   return (
@@ -115,13 +141,20 @@ export default function CreditDetails() {
           </h3>
 
           <input
-            type="text"
+            type="number"
+            inputMode="numeric"
             value={amount}
-            readOnly={isMobile}   // editable only on desktop
+            onChange={handleDesktopChange}
+            readOnly={isMobile}
             placeholder="Enter amount"
-            className="w-full border rounded-lg p-2 mb-4"
+            className={`w-full border rounded-lg p-2 mb-2 ${
+              error ? "border-red-500" : ""
+            }`}
             onClick={() => isMobile && setShowKeypad(true)}
           />
+
+          {/* Error message */}
+          {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
 
           {/* Keypad only for mobile */}
           {isMobile && showKeypad && (
@@ -130,8 +163,13 @@ export default function CreditDetails() {
 
           <div className="flex gap-2 mt-4">
             <button
-              onClick={() => setShowQR(true)}
-              className="flex-1 bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-800 active:scale-95 transition"
+              onClick={() => !error && setShowQR(true)}
+              disabled={!!error || !amount}
+              className={`flex-1 px-4 py-2 rounded-lg text-white transition ${
+                !error && amount
+                  ? "bg-blue-900 hover:bg-blue-800 active:scale-95"
+                  : "bg-gray-400 cursor-not-allowed"
+              }`}
             >
               Generate QR Code
             </button>
