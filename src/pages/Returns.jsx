@@ -1,117 +1,111 @@
-// src/pages/Orders.jsx
+// src/pages/Returns.jsx
 import { useState } from "react";
 import { Eye, X } from "lucide-react";
 
-// ✅ Export dummy orders so Home.jsx or other components can import
-export const orders = {
-  Pending: [
+// ✅ Export dummy returns for other components
+export const returns = {
+  "Return Pending": [
     {
-      id: "ORD-2025-001",
-      date: "2025-09-23",
+      id: "RET-2025-001",
+      date: "2025-10-01",
       items: [
-        { name: "Apple (1kg)", quantity: 2, price: 120 },
-        { name: "Banana (1kg)", quantity: 1, price: 80 },
+        { name: "Apple (1kg)", quantity: 1, price: 120 },
+        { name: "Milk (1L)", quantity: 2, price: 50 },
       ],
-      status: "Pending",
-      paymentStatus: "Credit",
-      paymentMethod: "UPI",
+      status: "Return Pending",
     },
     {
-      id: "ORD-2025-002",
-      date: "2025-09-21",
-      items: [{ name: "Milk (1L)", quantity: 3, price: 50 }],
-      status: "Pending",
-      paymentStatus: "Non-credit",
-      paymentMethod: "COD",
+      id: "RET-2025-002",
+      date: "2025-09-30",
+      items: [{ name: "Bread", quantity: 1, price: 40 }],
+      status: "Return Pending",
     },
   ],
-  Delivered: [
+  "Return Successful": [
     {
-      id: "ORD-2025-003",
-      date: "2025-09-22",
-      items: [{ name: "Bread", quantity: 1, price: 50 }],
-      status: "Delivered",
-      paymentStatus: "Credit",
-      paymentMethod: "Card",
+      id: "RET-2025-003",
+      date: "2025-09-28",
+      items: [{ name: "Cheese", quantity: 2, price: 90 }],
+      status: "Return Successful",
     },
+  ],
+  "Refund Initiated": [
     {
-      id: "ORD-2025-004",
-      date: "2025-09-19",
+      id: "RET-2025-004",
+      date: "2025-09-26",
+      items: [{ name: "Butter", quantity: 1, price: 55 }],
+      status: "Refund Initiated",
+    },
+  ],
+  "Refund Completed": [
+    {
+      id: "RET-2025-005",
+      date: "2025-09-25",
       items: [{ name: "Eggs", quantity: 12, price: 20 }],
-      status: "Delivered",
-      paymentStatus: "Non-credit",
-      paymentMethod: "COD",
-    },
-  ],
-  Cancelled: [
-    {
-      id: "ORD-2025-005",
-      date: "2025-09-18",
-      items: [{ name: "Cheese", quantity: 1, price: 90 }],
-      status: "Cancelled",
-      paymentStatus: "Non-credit",
-      paymentMethod: "COD",
-    },
-  ],
-  Rejected: [
-    {
-      id: "ORD-2025-006",
-      date: "2025-09-15",
-      items: [{ name: "Butter", quantity: 2, price: 55 }],
-      status: "Rejected",
-      paymentStatus: "Credit",
-      paymentMethod: "UPI",
+      status: "Refund Completed",
     },
   ],
 };
 
-export default function Orders() {
+export default function Returns() {
   const [activeTab, setActiveTab] = useState("All");
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedReturn, setSelectedReturn] = useState(null);
 
-  // Combine all orders for "All" tab
-  const allOrders = [
-    ...orders.Pending,
-    ...orders.Delivered,
-    ...orders.Cancelled,
-    ...orders.Rejected,
+  const allReturns = [
+    ...returns["Return Pending"],
+    ...returns["Return Successful"],
+    ...returns["Refund Initiated"],
+    ...returns["Refund Completed"],
   ];
 
   const tabs = [
-    { key: "All", label: "All", count: allOrders.length },
-    { key: "Pending", label: "Pending", count: orders.Pending.length },
-    { key: "Delivered", label: "Delivered", count: orders.Delivered.length },
-    { key: "Cancelled", label: "Cancelled", count: orders.Cancelled.length },
-    { key: "Rejected", label: "Rejected", count: orders.Rejected.length },
+    { key: "All", label: "All", count: allReturns.length },
+    {
+      key: "Return Pending",
+      label: "Return Pending",
+      count: returns["Return Pending"].length,
+    },
+    {
+      key: "Return Successful",
+      label: "Return Successful",
+      count: returns["Return Successful"].length,
+    },
+    {
+      key: "Refund Initiated",
+      label: "Refund Initiated",
+      count: returns["Refund Initiated"].length,
+    },
+    {
+      key: "Refund Completed",
+      label: "Refund Completed",
+      count: returns["Refund Completed"].length,
+    },
   ];
 
-  const getOrdersForTab = (tab) => (tab === "All" ? allOrders : orders[tab]);
+  const getReturnsForTab = (tab) => (tab === "All" ? allReturns : returns[tab]);
 
-  // Helper: get status color
   const getStatusColor = (status) => {
     switch (status) {
-      case "Pending":
-      case "Processing":
+      case "Return Pending":
         return "bg-orange-500";
-      case "Delivered":
+      case "Return Successful":
         return "bg-green-600";
-      case "Cancelled":
-        return "bg-gray-400";
-      case "Rejected":
-        return "bg-red-600";
+      case "Refund Initiated":
+        return "bg-blue-600";
+      case "Refund Completed":
+        return "bg-teal-600";
       default:
         return "bg-gray-300";
     }
   };
 
-  // Calculate grand total
   const getGrandTotal = (items) =>
     items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-2">Orders</h2>
-      <p className="text-gray-500 mb-4">Track and manage all your orders</p>
+      <h2 className="text-2xl font-bold text-gray-800 mb-2">Returns</h2>
+      <p className="text-gray-500 mb-4">Track and manage all your returns</p>
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6 flex-wrap">
@@ -130,14 +124,14 @@ export default function Orders() {
               className={`text-white text-xs px-2 py-0.5 rounded-full ${
                 key === "All"
                   ? "bg-blue-600"
-                  : key === "Pending"
+                  : key === "Return Pending"
                   ? "bg-orange-500"
-                  : key === "Delivered"
+                  : key === "Return Successful"
                   ? "bg-green-600"
-                  : key === "Cancelled"
-                  ? "bg-gray-400"
-                  : key === "Rejected"
-                  ? "bg-red-600"
+                  : key === "Refund Initiated"
+                  ? "bg-blue-600"
+                  : key === "Refund Completed"
+                  ? "bg-teal-600"
                   : "bg-gray-300"
               }`}
             >
@@ -147,40 +141,40 @@ export default function Orders() {
         ))}
       </div>
 
-      {/* Orders List */}
+      {/* Returns List */}
       <div className="space-y-4">
-        {getOrdersForTab(activeTab).map((order) => (
+        {getReturnsForTab(activeTab).map((ret) => (
           <div
-            key={order.id}
+            key={ret.id}
             className="bg-white p-4 rounded-lg shadow-sm border flex justify-between items-center"
           >
             <div>
-              <h3 className="font-semibold text-gray-800">{order.id}</h3>
+              <h3 className="font-semibold text-gray-800">{ret.id}</h3>
               <p className="text-sm text-gray-600 mt-1">
-                <strong>Delivery Date:</strong> {order.date}
+                <strong>Return Date:</strong> {ret.date}
               </p>
               <p className="text-sm text-gray-600">
-                <strong>Items:</strong> {order.items.length}
+                <strong>Items:</strong> {ret.items.length}
               </p>
               <p
                 className={`text-sm mt-1 font-medium ${getStatusColor(
-                  order.status
+                  ret.status
                 ).replace("bg-", "text-")}`}
               >
-                <strong>Grand Total:</strong> ₹{getGrandTotal(order.items)}
+                <strong>Grand Total:</strong> ₹{getGrandTotal(ret.items)}
               </p>
             </div>
 
             <div className="flex items-center gap-3">
               <span
                 className={`text-xs px-2 py-1 rounded-full text-white ${getStatusColor(
-                  order.status
+                  ret.status
                 )}`}
               >
-                {order.status}
+                {ret.status}
               </span>
               <button
-                onClick={() => setSelectedOrder(order)}
+                onClick={() => setSelectedReturn(ret)}
                 className="flex items-center gap-1 px-3 py-1.5 border rounded-lg text-gray-700 hover:bg-gray-100 text-sm"
               >
                 <Eye className="w-4 h-4" /> View Details
@@ -191,37 +185,37 @@ export default function Orders() {
       </div>
 
       {/* Modal */}
-      {selectedOrder && (
+      {selectedReturn && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
             <button
-              onClick={() => setSelectedOrder(null)}
+              onClick={() => setSelectedReturn(null)}
               className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
             >
               <X size={20} />
             </button>
-            <h2 className="text-xl font-semibold mb-4">Order Details</h2>
+            <h2 className="text-xl font-semibold mb-4">Return Details</h2>
             <p className="text-gray-800 mb-2">
-              <strong>Order Number:</strong> {selectedOrder.id}
+              <strong>Return Number:</strong> {selectedReturn.id}
             </p>
             <p className="text-gray-800 mb-2">
               <strong>Status:</strong>{" "}
               <span
                 className={`text-white px-2 py-1 rounded-full ${getStatusColor(
-                  selectedOrder.status
+                  selectedReturn.status
                 )}`}
               >
-                {selectedOrder.status}
+                {selectedReturn.status}
               </span>
             </p>
             <p className="text-gray-800 mb-2">
-              <strong>Delivery Date:</strong> {selectedOrder.date}
+              <strong>Return Date:</strong> {selectedReturn.date}
             </p>
 
             <div className="mt-3">
               <strong className="text-gray-800">Items:</strong>
               <ul className="list-disc list-inside text-gray-700 mt-1">
-                {selectedOrder.items.map((item, idx) => (
+                {selectedReturn.items.map((item, idx) => (
                   <li key={idx}>
                     {item.name} - {item.quantity} pcs × ₹{item.price} = ₹
                     {item.quantity * item.price}
@@ -231,11 +225,11 @@ export default function Orders() {
             </div>
 
             <p className="text-gray-800 mt-3 font-semibold">
-              Grand Total: ₹{getGrandTotal(selectedOrder.items)}
+              Grand Total: ₹{getGrandTotal(selectedReturn.items)}
             </p>
 
             <button
-              onClick={() => setSelectedOrder(null)}
+              onClick={() => setSelectedReturn(null)}
               className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
             >
               Close

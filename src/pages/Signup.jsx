@@ -30,7 +30,7 @@ export default function Signup() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-full bg-gray-100">
       <div className="bg-white w-full max-w-2xl rounded-xl shadow-lg p-8">
         <h2 className="text-2xl font-bold text-center mb-6 text-[#1F4E79]">
           Create Your Account

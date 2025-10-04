@@ -1,11 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, ShoppingCart, User, LogOut } from "lucide-react";
+import { useCart } from "../context/CartContext"; // ✅ Added
 
 export default function Navbar({ onToggleSidebar, onToggleMobile }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+
+  const { cart } = useCart(); // ✅ Get cart
+
+  // Calculate total items
+  const totalItems = cart.reduce((sum, item) => sum + (item.qtyKg || 0) + (item.qtyCase || 0), 0);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -26,16 +32,10 @@ export default function Navbar({ onToggleSidebar, onToggleMobile }) {
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 py-3 bg-white shadow-sm border-b">
       {/* Left: Brand + Hamburger */}
       <div className="flex items-center gap-3">
-        <button
-          onClick={onToggleMobile}
-          className="p-2 rounded-lg hover:bg-gray-100 md:hidden"
-        >
+        <button onClick={onToggleMobile} className="p-2 rounded-lg hover:bg-gray-100 md:hidden">
           <Menu size={22} className="text-[#1F4E79]" />
         </button>
-        <button
-          onClick={onToggleSidebar}
-          className="p-2 rounded-lg hover:bg-gray-100 hidden md:block"
-        >
+        <button onClick={onToggleSidebar} className="p-2 rounded-lg hover:bg-gray-100 hidden md:block">
           <Menu size={22} className="text-[#1F4E79]" />
         </button>
         <h1 className="text-lg font-bold text-[#1F4E79]">RootnShade</h1>
@@ -43,18 +43,17 @@ export default function Navbar({ onToggleSidebar, onToggleMobile }) {
 
       {/* Right: Cart + Profile */}
       <div className="flex items-center gap-4 relative" ref={dropdownRef}>
-        <Link
-          to="/cart"
-          className="p-2 rounded-lg hover:bg-gray-100 transition"
-        >
+        <Link to="/cart" className="p-2 rounded-lg hover:bg-gray-100 transition relative">
           <ShoppingCart size={22} className="text-[#1F4E79]" />
+          {totalItems > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow">
+              {totalItems}
+            </span>
+          )}
         </Link>
 
         {/* Profile Dropdown */}
-        <button
-          onClick={() => setDropdownOpen((prev) => !prev)}
-          className="p-2 rounded-lg hover:bg-gray-100 relative"
-        >
+        <button onClick={() => setDropdownOpen((prev) => !prev)} className="p-2 rounded-lg hover:bg-gray-100 relative">
           <User size={22} className="text-[#1F4E79]" />
         </button>
 

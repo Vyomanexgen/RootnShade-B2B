@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+// src/pages/Home.jsx
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Search,
   Package,
@@ -6,9 +8,39 @@ import {
   Gift,
   CreditCard,
   ArrowRight,
-} from "lucide-react";
+  RotateCcw,
+} from "lucide-react"; // ✅ Added RotateCcw
+
+import { offers } from "./Offers";
+import { useCart } from "../context/CartContext"; 
+import { orders } from "./Orders";   // ✅ Export orders from Orders.jsx
+import { returns } from "./Returns"; // ✅ Export returns from Returns.jsx
 
 export default function Home() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [offersCount, setOffersCount] = useState(0);
+  const navigate = useNavigate();
+  const { cart } = useCart();
+
+  // ✅ Dynamic counts
+  const totalCartItems = cart.reduce(
+    (sum, item) => sum + (item.qtyKg || 0) + (item.qtyCase || 0),
+    0
+  );
+  const totalOrders = Object.values(orders).flat().length;
+  const totalReturns = Object.values(returns).flat().length;
+
+  useEffect(() => {
+    setOffersCount(offers.length);
+  }, []);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim() !== "") {
+      navigate(`/products?q=${encodeURIComponent(searchTerm)}`);
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
@@ -29,73 +61,81 @@ export default function Home() {
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white border rounded-lg shadow-sm p-4 flex items-center gap-2">
+      <form
+        onSubmit={handleSearch}
+        className="bg-white border rounded-lg shadow-sm p-4 flex items-center gap-2"
+      >
         <Search className="text-gray-400" size={18} />
         <input
           type="text"
           placeholder="Search products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full outline-none text-sm text-gray-700"
         />
-      </div>
+      </form>
 
       {/* Quick Links */}
       <section>
         <h2 className="font-semibold text-lg mb-3">Quick Links</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+          {/* Orders Card */}
           <Link to="/orders">
-            <div className="relative bg-white border rounded-lg shadow-sm p-4 h-32 flex flex-col justify-between hover:shadow-md transition">
-              <ArrowRight
-                size={18}
-                className="absolute top-3 right-3 text-gray-400"
-              />
-              <div className="flex items-center gap-2 text-gray-700 font-medium">
+            <div className="relative bg-white border rounded-lg shadow-sm p-3 h-24 flex flex-col justify-between items-center hover:shadow-md transition text-center">
+              <ArrowRight size={16} className="absolute top-2 right-2 text-gray-400" />
+              <div className="flex flex-col items-center gap-1 text-gray-700 font-medium">
                 <Package size={20} />
                 Orders
               </div>
-              <p className="text-xl font-bold">12</p>
+              <div className="mt-1 bg-[#1F4E79] text-white text-base font-bold w-10 h-10 rounded-full flex items-center justify-center shadow-md">
+                {totalOrders} {/* ✅ Dynamic */}
+              </div>
             </div>
           </Link>
 
+          {/* Cart Card */}
           <Link to="/cart">
-            <div className="relative bg-white border rounded-lg shadow-sm p-4 h-32 flex flex-col justify-between hover:shadow-md transition">
-              <ArrowRight
-                size={18}
-                className="absolute top-3 right-3 text-gray-400"
-              />
-              <div className="flex items-center gap-2 text-gray-700 font-medium">
+            <div className="relative bg-white border rounded-lg shadow-sm p-3 h-24 flex flex-col justify-between items-center hover:shadow-md transition text-center">
+              <ArrowRight size={16} className="absolute top-2 right-2 text-gray-400" />
+              <div className="flex flex-col items-center gap-1 text-gray-700 font-medium">
                 <ShoppingCart size={20} />
                 Cart
               </div>
-              <p className="text-xl font-bold">5</p>
+              <div className="mt-1 bg-[#1F4E79] text-white text-base font-bold w-10 h-10 rounded-full flex items-center justify-center shadow-md">
+                {totalCartItems} {/* ✅ Dynamic */}
+              </div>
             </div>
           </Link>
 
+          {/* Offers Card */}
           <Link to="/offers">
-            <div className="relative bg-white border rounded-lg shadow-sm p-4 h-32 flex flex-col justify-between hover:shadow-md transition">
-              <ArrowRight
-                size={18}
-                className="absolute top-3 right-3 text-gray-400"
-              />
-              <div className="flex items-center gap-2 text-gray-700 font-medium">
+            <div className="relative bg-white border rounded-lg shadow-sm p-3 h-24 flex flex-col justify-between items-center hover:shadow-md transition text-center">
+              <ArrowRight size={16} className="absolute top-2 right-2 text-gray-400" />
+              <div className="flex flex-col items-center gap-1 text-gray-700 font-medium">
                 <Gift size={20} />
                 Offers
               </div>
+              <div className="mt-1 bg-[#1F4E79] text-white text-base font-bold w-10 h-10 rounded-full flex items-center justify-center shadow-md">
+                {offersCount}
+              </div>
             </div>
           </Link>
 
-          <Link to="/credit-details">
-            <div className="relative bg-white border rounded-lg shadow-sm p-4 h-32 flex flex-col justify-between hover:shadow-md transition">
-              <ArrowRight
-                size={18}
-                className="absolute top-3 right-3 text-gray-400"
-              />
-              <div className="flex items-center gap-2 text-gray-700 font-medium">
-                <CreditCard size={20} />
-                Credit Details
+          {/* Returns Card */}
+          <Link to="/returns">
+            <div className="relative bg-white border rounded-lg shadow-sm p-3 h-24 flex flex-col justify-between items-center hover:shadow-md transition text-center">
+              <ArrowRight size={16} className="absolute top-2 right-2 text-gray-400" />
+              <div className="flex flex-col items-center gap-1 text-gray-700 font-medium">
+                <RotateCcw size={20} />
+                Returns
               </div>
-              <p className="text-xl font-bold">2</p>
+              <div className="mt-1 bg-[#1F4E79] text-white text-base font-bold w-10 h-10 rounded-full flex items-center justify-center shadow-md">
+                {totalReturns} {/* ✅ Dynamic */}
+              </div>
             </div>
           </Link>
+
         </div>
       </section>
 
@@ -108,13 +148,11 @@ export default function Home() {
             <p className="text-xl font-bold">₹15,340</p>
             <span className="text-sm text-gray-500">vs previous period</span>
           </div>
-
           <div className="bg-white border rounded-lg shadow-sm p-4 h-28 flex flex-col justify-between hover:shadow-md transition">
             <p className="font-medium">This Week</p>
             <p className="text-xl font-bold">₹89,520</p>
             <span className="text-sm text-gray-500">vs previous period</span>
           </div>
-
           <div className="bg-white border rounded-lg shadow-sm p-4 h-28 flex flex-col justify-between hover:shadow-md transition">
             <p className="font-medium">This Month</p>
             <p className="text-xl font-bold">₹3,45,680</p>

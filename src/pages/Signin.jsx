@@ -10,7 +10,7 @@ export default function Signin() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-50">
+    <div className="flex justify-center items-center min-h-full bg-gray-50">
       <div className="bg-white border rounded-xl shadow-sm p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Sign In</h2>
 
